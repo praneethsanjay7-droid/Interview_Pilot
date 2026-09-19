@@ -1,47 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<title>Register - Interview Pilot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-	<h1>Create an account</h1>
 
-<form action="/register" method="POST">
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <!-- Left Side Motivational Sidebar -->
+            <div class="auth-sidebar">
+                <div>
+                    <a href="index.html" class="brand-logo" style="margin-bottom: 48px;">
+                        <div class="brand-icon">✈️</div>
+                        <span>Interview Pilot</span>
+                    </a>
+                    <h2 style="font-size: 28px; font-weight: 800; line-height: 1.2; margin-bottom: 16px;">
+                        Start Preparing for Your Dream Career
+                    </h2>
+                    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6;">
+                        Join thousands of students organizing placement interviews and receiving tailored AI preparation plans.
+                    </p>
+                </div>
 
-    <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        required
-    >
+                <div class="quote-card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); margin: 0;">
+                    <div class="quote-icon" style="background: #ffffff;">🌱</div>
+                    <div style="color: #ffffff;">
+                        <div class="quote-text">"Start building your interview confidence today."</div>
+                    </div>
+                </div>
+            </div>
 
-    <br><br>
+            <!-- Right Side Register Form -->
+            <div class="auth-form-side">
+                <div style="margin-bottom: 28px;">
+                    <h1 style="font-size: 28px; font-weight: 800; color: var(--dark); margin-bottom: 6px;">Create Your Account</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Takes less than a minute to get started.</p>
+                </div>
 
-    <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        required
-    >
+                <form action="/register" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required>
+                    </div>
 
-    <br><br>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="student@college.edu" required>
+                    </div>
 
-    <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-    >
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required>
+                    </div>
 
-    <br><br>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 14px; font-size: 15px; margin-top: 8px;">
+                        Create Account & Start 🚀
+                    </button>
+                </form>
 
-    <button type="submit">Register</button>
+                <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+                    Already have an account? 
+                    <a href="login.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-</form>
-
-	<a href="login.html">Already have an account? Log in</a>
 </body>
 </html>

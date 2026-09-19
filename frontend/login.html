@@ -3,39 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
     <title>Login - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <h1>Login</h1>
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <!-- Left Side Motivational Sidebar -->
+            <div class="auth-sidebar">
+                <div>
+                    <a href="index.html" class="brand-logo" style="margin-bottom: 48px;">
+                        <div class="brand-icon">✈️</div>
+                        <span>Interview Pilot</span>
+                    </a>
+                    <h2 style="font-size: 28px; font-weight: 800; line-height: 1.2; margin-bottom: 16px;">
+                        Welcome Back to Your Prep Companion
+                    </h2>
+                    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6;">
+                        Log in to view your upcoming interviews, resume preparation plans, and daily progress.
+                    </p>
+                </div>
 
-   <form action="/login" method="POST">
+                <div class="quote-card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); margin: 0;">
+                    <div class="quote-icon" style="background: #ffffff;">🌟</div>
+                    <div style="color: #ffffff;">
+                        <div class="quote-text">"Your next opportunity starts with one step."</div>
+                    </div>
+                </div>
+            </div>
 
-    <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        required
-    >
+            <!-- Right Side Login Form -->
+            <div class="auth-form-side">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 800; color: var(--dark); margin-bottom: 6px;">Login to Your Account</h1>
+                    <p style="color: var(--text-muted); font-size: 14px;">Please enter your credentials to access your dashboard.</p>
+                </div>
 
-    <br><br>
+                <div id="alertBanner" style="display: none; padding: 12px 16px; border-radius: var(--radius-md); font-size: 14px; margin-bottom: 20px;"></div>
 
-    <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-    >
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="student@college.edu" required>
+                    </div>
 
-    <br><br>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                    </div>
 
-    <button type="submit">Login</button>
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 14px; font-size: 15px; margin-top: 8px;">
+                        Login to Dashboard 🚀
+                    </button>
+                </form>
 
-</form>
+                <div style="text-align: center; margin-top: 24px; font-size: 14px; color: var(--text-muted);">
+                    Don't have an account yet? 
+                    <a href="register.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">Create an Account</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="register.html">Create an account</a>
-
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const alertBanner = document.getElementById("alertBanner");
+        if (params.get("error") === "invalid") {
+            alertBanner.style.display = "block";
+            alertBanner.style.background = "#fef2f2";
+            alertBanner.style.border = "1px solid #fecaca";
+            alertBanner.style.color = "#991b1b";
+            alertBanner.innerText = "❌ Invalid email or password. Please try again.";
+        } else if (params.get("info") === "exists") {
+            alertBanner.style.display = "block";
+            alertBanner.style.background = "#eff6ff";
+            alertBanner.style.border = "1px solid #bfdbfe";
+            alertBanner.style.color = "#1e40af";
+            alertBanner.innerText = "ℹ️ An account with this email already exists. Please log in.";
+        }
+    </script>
 </body>
 </html>

@@ -1,49 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<title>Profile - Interview Pilot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-	<h1>Profile</h1>
 
-	<form>
-		<label for="name">Full name</label>
-		<input id="name" type="text" placeholder="Full name">
+    <div class="app-page">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <a href="dashboard.html" class="brand-logo">
+                <div class="brand-icon">✈️</div>
+                <span>Interview Pilot</span>
+            </a>
 
-		<label for="role">Target role</label>
-		<input id="role" type="text" placeholder="Target role">
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="interviews.html" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span>Interviews</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="plan.html" class="nav-link">
+                        <span class="nav-icon">📚</span>
+                        <span>Preparation Plan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="nav-link active">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
 
-		<label for="experience">Experience level</label>
-		<select id="experience">
-			<option>Student</option>
-			<option>Entry level</option>
-			<option>Experienced</option>
-		</select>
+            <div class="sidebar-footer">
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
 
-		<button type="submit">Save profile</button>
-	</form>
-    <h2>Resume</h2>
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Header Section -->
+            <header class="page-header">
+                <h1 class="page-title">Your Profile & Resume</h1>
+                <p class="page-subtitle">Manage your personal information and placement resume.</p>
+            </header>
 
-<form action="/upload-resume" method="POST" enctype="multipart/form-data">
+            <!-- Motivational Banner -->
+            <div class="quote-card">
+                <div class="quote-icon">📄</div>
+                <div>
+                    <div class="quote-text">"Your resume tells your story. Make it count."</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Profile Guidance</div>
+                </div>
+            </div>
 
-    <input
-        type="file"
-        name="resume"
-        accept=".pdf,.doc,.docx"
-        required
-    >
+            <!-- Grid Layout for Profile and Resume Upload -->
+            <div class="grid-2">
+                <!-- Profile Information Card -->
+                <div class="card">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Candidate Profile</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Keep your target roles and details up to date.</p>
 
-    <br><br>
+                    <form onsubmit="event.preventDefault(); alert('Profile saved successfully!');">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Full Name</label>
+                            <input id="name" type="text" class="form-control" placeholder="Full name" value="Student Candidate">
+                        </div>
 
-    <button type="submit">
-        Upload Resume
-    </button>
+                        <div class="form-group">
+                            <label class="form-label" for="role">Target Role</label>
+                            <input id="role" type="text" class="form-control" placeholder="e.g. Software Engineer, Data Analyst" value="Software Development Engineer">
+                        </div>
 
-</form>
+                        <div class="form-group">
+                            <label class="form-label" for="experience">Experience Level</label>
+                            <select id="experience" class="form-control">
+                                <option selected>College Student (Final Year)</option>
+                                <option>Entry Level Graduate</option>
+                                <option>Experienced</option>
+                            </select>
+                        </div>
 
-	<p><a href="dashboard.html">Back to dashboard</a></p>
+                        <button type="submit" class="btn btn-primary btn-block">Save Profile Details</button>
+                    </form>
+                </div>
+
+                <!-- Resume Upload Card -->
+                <div class="card" style="border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                        <h3 style="font-size: 18px; font-weight: 700;">Your Placement Resume</h3>
+                        <span class="badge badge-success">PDF / DOCX</span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+                        Upload your latest resume so Gemini AI can extract your strengths and build tailored preparation plans.
+                    </p>
+
+                    <form action="/upload-resume" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="form-label" for="resume">Select Resume File</label>
+                            <input type="file" id="resume" name="resume" class="form-control" accept=".pdf,.doc,.docx" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-secondary btn-block" style="padding: 12px; margin-top: 12px;">
+                            📤 Upload Resume
+                        </button>
+                    </form>
+
+                    <div style="margin-top: 20px; padding: 12px 16px; background: var(--primary-light); border-radius: var(--radius-md); font-size: 13px; color: var(--primary);">
+                        💡 <strong>Tip:</strong> Uploading your resume allows the AI to highlight relevant projects and skill-specific interview questions!
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("status") === "uploaded") {
+            alert("🎉 Resume uploaded successfully! You can now generate your AI preparation plan.");
+        } else if (params.get("error")) {
+            alert("❌ Resume upload failed. Please select a valid PDF or DOCX file and try again.");
+        }
+    </script>
 </body>
 </html>

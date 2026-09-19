@@ -42,36 +42,33 @@ const upload = multer({
 });
 
 
-app.post("/register",async(req,res)=>{
-
-  try{
-    const {name,email,password}=req.body;
-    const existingUser=await User.findOne({email});
-    if(existingUser){
-        return res.status(400).send("User already exists");
-    }
-    const user=new User({name,email,password});
-    await user.save();
-    res.status(201).send("User registered successfully");
-}catch(err){
-    console.log(err.message);
-    res.send("registration failed");
-}})
-
-app.post("/login",async(req,res)=>{
-    try{
-        const {email,password}=req.body;
-        const user=await User.findOne({email});
-        if(!user){
-            return res.send("Invalid email or password");
+app.post("/register", async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.redirect("/login.html?info=exists");
         }
-        if(user.password!==password){
-            return res.send("Invalid Password");
+        const user = new User({ name, email, password });
+        await user.save();
+        res.redirect("/dashboard.html");
+    } catch (err) {
+        console.log(err.message);
+        res.redirect("/register.html?error=failed");
+    }
+});
+
+app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user || user.password !== password) {
+            return res.redirect("/login.html?error=invalid");
         }
         return res.redirect("/dashboard.html");
-    }catch(err){
+    } catch (err) {
         console.log(err.message);
-        res.send("Login failed");
+        res.redirect("/login.html?error=failed");
     }
 });
 
@@ -79,21 +76,20 @@ let uploadedResumePath = null;
 app.post("/upload-resume", upload.single("resume"), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).send("No resume uploaded");
+            return res.redirect("/profile.html?error=no_file");
         }
 
         uploadedResumePath = path.resolve(req.file.path);
 
         if (!fs.existsSync(uploadedResumePath)) {
-            return res.status(400).send("Resume file not found. Please upload the resume again.");
+            return res.redirect("/profile.html?error=not_found");
         }
 
-        console.log("Resume uploaded:");
-        console.log(req.file);
-        res.send("Resume uploaded successfully");
+        console.log("Resume uploaded:", req.file.originalname);
+        res.redirect("/profile.html?status=uploaded");
     } catch (err) {
         console.log(err.message);
-        res.send("Resume upload failed");
+        res.redirect("/profile.html?error=failed");
     }
 });
 app.post("/add-interview", async (req, res) => {
@@ -163,12 +159,20 @@ app.get("/next-interview", async (req, res) => {
 
 app.get("/create-test-plan", async (req, res) => {
     try {
-
-        const interview = await Interview.findOne()
-            .sort({ date: 1 });
+        const { id, company } = req.query;
+        let interview = null;
+        if (id) {
+            interview = await Interview.findById(id).catch(() => null);
+        }
+        if (!interview && company) {
+            interview = await Interview.findOne({ company: new RegExp("^" + company + "$", "i") });
+        }
+        if (!interview) {
+            interview = await Interview.findOne().sort({ date: 1 });
+        }
 
         if (!interview) {
-            return res.send("Please add an interview first");
+            return res.redirect("/interviews.html?info=add_interview_first");
         }
 
         const testPlan = new PreparationPlan({
@@ -177,57 +181,105 @@ app.get("/create-test-plan", async (req, res) => {
             plan: `
 Interview Preparation Plan
 
-Company: ${interview.company}
+Target Company: ${interview.company}
+Round: ${interview.round || "Technical"}
 
 1. Technical Preparation
-- Revise Java basics
-- Practice SQL queries
-- Revise Data Structures
+- Revise core programming concepts relevant to ${interview.company}
+- Practice top SQL queries (JOINs, Aggregation, Grouping)
+- Revise Data Structures & Algorithm patterns
 
 2. Project Preparation
-- Understand your projects
-- Prepare project explanation
-- Prepare questions about your technologies
+- Prepare a 2-minute architectural explanation of your projects
+- Highlight your individual contribution and technical stack
+- Prepare to discuss challenges faced and trade-offs made
 
 3. HR Preparation
-- Tell me about yourself
-- Why should we hire you?
-- Explain your strengths and weaknesses
+- "Tell me about yourself" tailored for ${interview.company}
+- Research ${interview.company}'s core products, values, and recent news
+- Prepare clear answers for strengths, weaknesses, and career goals
 
 4. Final Preparation
-- Revise important concepts
-- Prepare questions for the interviewer
-- Keep your resume ready
+- Conduct a mock technical interview practice
+- Review your resume line by line
+- Prepare 2 thoughtful questions to ask your interviewer
 `
         });
 
         await testPlan.save();
 
-        res.send("Test preparation plan created successfully");
-
+        res.redirect(`/plan.html?company=${encodeURIComponent(interview.company)}&id=${interview._id}`);
     } catch (error) {
-
         console.log(error.message);
-
-        res.status(500).send("Failed to create test plan");
+        res.redirect("/plan.html?error=create_failed");
     }
 });
 app.get("/plan", async (req, res) => {
     try {
+        const { id, company } = req.query;
+        let query = {};
+        if (id) {
+            query = { interviewId: id };
+        } else if (company) {
+            query = { company: new RegExp("^" + company + "$", "i") };
+        }
 
-        const plan = await PreparationPlan.findOne()
-            .sort({ generatedDate: -1 });
+        let plan = await PreparationPlan.findOne(query).sort({ generatedDate: -1 });
 
         if (!plan) {
-            return res.json(null);
+            // Find target interview matching query or latest
+            let interview = null;
+            if (id) {
+                interview = await Interview.findById(id).catch(() => null);
+            }
+            if (!interview && company) {
+                interview = await Interview.findOne({ company: new RegExp("^" + company + "$", "i") });
+            }
+            if (!interview) {
+                interview = await Interview.findOne().sort({ date: 1 });
+            }
+
+            if (!interview) {
+                return res.json(null);
+            }
+
+            // Create customized matching template plan for this company
+            plan = new PreparationPlan({
+                interviewId: interview._id,
+                company: interview.company,
+                plan: `
+Interview Preparation Plan
+
+Target Company: ${interview.company}
+Round: ${interview.round || "Technical"}
+
+1. Technical Preparation
+- Revise core programming concepts relevant to ${interview.company}
+- Practice top SQL queries (JOINs, Aggregation, Grouping)
+- Revise Data Structures & Algorithm patterns
+
+2. Project Preparation
+- Prepare a 2-minute architectural explanation of your projects
+- Highlight your individual contribution and technical stack
+- Prepare to discuss challenges faced and trade-offs made
+
+3. HR Preparation
+- "Tell me about yourself" tailored for ${interview.company}
+- Research ${interview.company}'s core products, values, and recent news
+- Prepare clear answers for strengths, weaknesses, and career goals
+
+4. Final Preparation
+- Conduct a mock technical interview practice
+- Review your resume line by line
+- Prepare 2 thoughtful questions to ask your interviewer
+`
+            });
+            await plan.save();
         }
 
         res.json(plan);
-
     } catch (error) {
-
         console.log(error.message);
-
         res.status(500).json({
             message: "Failed to load preparation plan"
         });
@@ -276,19 +328,29 @@ app.get("/test-gemini", async (req, res) => {
 app.get("/generate-plan", async (req, res) => {
     try {
         if (!ai) {
-            return res.status(500).json({
+            return res.status(503).json({
                 error: "Gemini API key is not configured. Add GEMINI_API_KEY to your local .env file before generating a plan."
             });
         }
 
         if (!uploadedResumePath) {
-            return res.send("Please upload a resume first");
+            return res.redirect("/profile.html?error=no_resume");
         }
 
-        const interview = await Interview.findOne().sort({ date: 1 });
+        const { id, company } = req.query;
+        let interview = null;
+        if (id) {
+            interview = await Interview.findById(id).catch(() => null);
+        }
+        if (!interview && company) {
+            interview = await Interview.findOne({ company: new RegExp("^" + company + "$", "i") });
+        }
+        if (!interview) {
+            interview = await Interview.findOne().sort({ date: 1 });
+        }
 
         if (!interview) {
-            return res.send("Please add an interview first");
+            return res.redirect("/interviews.html?error=no_interview");
         }
 
         const resumeFile = await ai.files.upload({
@@ -316,7 +378,7 @@ Create a simple personalized interview preparation plan.
 
 Include:
 
-1. Resume strengths relevant to the interview
+1. Resume strengths relevant to the interview at ${interview.company}
 2. Important topics to revise
 3. Technical preparation
 4. Project preparation
@@ -345,7 +407,7 @@ Keep the plan practical and concise.
 
         await preparationPlan.save();
 
-        res.send(`<pre>${text}</pre>`);
+        res.redirect(`/plan.html?company=${encodeURIComponent(interview.company)}&id=${interview._id}`);
 
     } catch (error) {
 

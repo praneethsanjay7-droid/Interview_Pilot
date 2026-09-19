@@ -1,152 +1,255 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <h1>Interview Pilot</h1>
+    <div class="app-page">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <a href="dashboard.html" class="brand-logo">
+                <div class="brand-icon">✈️</div>
+                <span>Interview Pilot</span>
+            </a>
 
-    <h2>Dashboard</h2>
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard.html" class="nav-link active">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="interviews.html" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span>Interviews</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="plan.html" class="nav-link">
+                        <span class="nav-icon">📚</span>
+                        <span>Preparation Plan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="nav-link">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
 
-    <p>Welcome to your interview preparation dashboard.</p>
+            <div class="sidebar-footer">
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
 
-    <hr>
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Header Section -->
+            <header class="page-header">
+                <h1 class="page-title">Good morning, Candidate 👋</h1>
+                <p class="page-subtitle">Let's get you ready for your next interview today.</p>
+            </header>
 
-    <h2>Next Interview</h2>
+            <!-- Motivational Banner -->
+            <div class="quote-card">
+                <div class="quote-icon">🎯</div>
+                <div>
+                    <div class="quote-text">"You don't need to know everything. You just need to be prepared for what matters."</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Daily Focus Reminder</div>
+                </div>
+            </div>
 
-    <div id="nextInterview">
-        Loading...
+            <!-- Top Grid: Next Interview & Progress Status -->
+            <div class="grid-2">
+                <!-- Next Interview Card -->
+                <div class="card" style="border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <span class="badge badge-primary">Next Up</span>
+                        <span id="countdownBadge" class="badge badge-warning">Loading...</span>
+                    </div>
+
+                    <div id="nextInterviewContent">
+                        <p style="color: var(--text-muted);">Loading upcoming interview details...</p>
+                    </div>
+                </div>
+
+                <!-- Overall Preparation Status Card -->
+                <div class="card" style="border-left: 4px solid var(--accent);">
+                    <span class="badge badge-accent" style="margin-bottom: 12px;">Prep Readiness</span>
+                    <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Preparation Status</h3>
+                    <p style="color: var(--text-muted); font-size: 13px;">You're making steady progress. Keep building your momentum!</p>
+
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span>Readiness Target</span>
+                            <span id="progressText">65% Complete</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progressBar" style="width: 65%;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px; font-size: 13px; color: var(--success); font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <span>✨</span> You're making good progress. Keep going!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Section: Today's Preparation Checklist -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 700;">Today's Preparation Tasks</h3>
+                        <p style="color: var(--text-muted); font-size: 13px;">Complete these essential items to boost your readiness for upcoming rounds.</p>
+                    </div>
+                    <a href="plan.html" class="btn btn-outline" style="padding: 6px 14px; font-size: 13px;">View Detailed Plan</a>
+                </div>
+
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="task1" checked onchange="updateProgress()">
+                        <label for="task1" style="cursor: pointer; flex: 1;">Revise core Java & Data Structures fundamentals</label>
+                        <span class="badge badge-primary">Technical</span>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="task2" checked onchange="updateProgress()">
+                        <label for="task2" style="cursor: pointer; flex: 1;">Practice top SQL query problems (JOINs, Aggregation)</label>
+                        <span class="badge badge-primary">Technical</span>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="task3" onchange="updateProgress()">
+                        <label for="task3" style="cursor: pointer; flex: 1;">Review your resume project architecture & your specific contribution</label>
+                        <span class="badge badge-accent">Project</span>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" id="task4" onchange="updateProgress()">
+                        <label for="task4" style="cursor: pointer; flex: 1;">Prepare responses for standard HR questions ("Tell me about yourself")</label>
+                        <span class="badge badge-success">HR Round</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Bottom Section: Upcoming Interviews Grid -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 class="section-title">📅 All Upcoming Placement Interviews</h3>
+                    <a href="interviews.html" class="btn btn-outline" style="padding: 6px 14px; font-size: 13px;">Manage Schedule</a>
+                </div>
+
+                <div id="upcomingInterviewsList" class="grid-3">
+                    <p style="color: var(--text-muted);">Loading interviews...</p>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <hr>
-
-<h2>Preparation</h2>
-
-<div id="preparation">
-    Loading...
-</div>
-
-    <hr>
-
-    <h2>Quick Links</h2>
-
-    <p>
-        <a href="/interviews.html">
-            Manage Interviews
-        </a>
-    </p>
-
-    <p>
-        <a href="/plan.html">
-            View Preparation Plan
-        </a>
-    </p>
-
-    <p>
-        <a href="/profile.html">
-            Open Profile
-        </a>
-    </p>
-
+    <!-- Frontend Script connecting to existing backend routes -->
     <script>
-
         async function loadNextInterview() {
-
             try {
-
                 const response = await fetch("/next-interview");
-
                 const interview = await response.json();
-
-                const container =
-                    document.getElementById("nextInterview");
+                const container = document.getElementById("nextInterviewContent");
+                const badge = document.getElementById("countdownBadge");
 
                 if (!interview) {
-
-                    container.innerHTML =
-                        "No upcoming interviews.";
-
+                    badge.innerText = "No Interviews";
+                    badge.className = "badge badge-primary";
+                    container.innerHTML = `
+                        <div class="empty-state" style="padding: 16px 0;">
+                            <div class="empty-title" style="font-size: 16px;">No upcoming interviews scheduled</div>
+                            <div class="empty-desc" style="font-size: 13px; margin-bottom: 12px;">Add your placement schedule to start automated preparation.</div>
+                            <a href="interviews.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">+ Add Interview</a>
+                        </div>
+                    `;
                     return;
                 }
 
-                const date = new Date(interview.date)
-                    .toLocaleDateString();
+                const interviewDate = new Date(interview.date);
+                const today = new Date();
+                const diffTime = interviewDate - today;
+                const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                
+                badge.innerText = `${diffDays} days remaining`;
 
                 container.innerHTML = `
-                    <h3>${interview.company}</h3>
-
-                    <p>
-                        <strong>Date:</strong> ${date}
-                    </p>
-
-                    <p>
-                        <strong>Round:</strong> ${interview.round}
-                    </p>
+                    <h2 style="font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 4px;">${interview.company}</h2>
+                    <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+                        <strong>Round:</strong> ${interview.round} | <strong>Date:</strong> ${interviewDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </div>
+                    <a href="plan.html?company=${encodeURIComponent(interview.company)}&id=${interview._id}" class="btn btn-primary btn-block">Start Preparation Plan 📚</a>
                 `;
-
             } catch (error) {
-
-                console.log(error);
-
-                document.getElementById("nextInterview").innerHTML =
-                    "Failed to load interview.";
-
+                console.error(error);
+                document.getElementById("nextInterviewContent").innerHTML = "<p style='color: var(--warning);'>Failed to load interview details.</p>";
             }
         }
 
-        loadNextInterview();
+        async function loadAllInterviews() {
+            try {
+                const response = await fetch("/interviews");
+                const interviews = await response.json();
+                const list = document.getElementById("upcomingInterviewsList");
 
-        async function loadPreparationPlan() {
+                if (!interviews || interviews.length === 0) {
+                    list.className = "";
+                    list.innerHTML = `
+                        <div class="card empty-state">
+                            <div class="empty-icon">📅</div>
+                            <div class="empty-title">Your interview calendar is clear</div>
+                            <div class="empty-desc">Add your first placement interview and start preparing with confidence.</div>
+                            <a href="interviews.html" class="btn btn-primary">+ Add Interview</a>
+                        </div>
+                    `;
+                    return;
+                }
 
-    try {
+                list.className = "grid-3";
+                list.innerHTML = "";
 
-        const response = await fetch("/plan");
-
-        const plan = await response.json();
-
-        const container =
-            document.getElementById("preparation");
-
-        if (!plan) {
-
-            container.innerHTML = `
-                <p>No preparation plan available yet.</p>
-                <a href="/plan.html">
-                    View Preparation Plan
-                </a>
-            `;
-
-            return;
+                interviews.forEach(item => {
+                    const dateStr = new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h4 style="font-size: 18px; font-weight: 700;">${item.company}</h4>
+                            <span class="badge badge-primary">${item.round}</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                            📅 <strong>Date:</strong> ${dateStr}
+                        </div>
+                        <a href="plan.html?company=${encodeURIComponent(item.company)}&id=${item._id}" class="btn btn-outline btn-block" style="font-size: 13px; padding: 8px 12px;">Prepare Now</a>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (error) {
+                console.error(error);
+                document.getElementById("upcomingInterviewsList").innerHTML = "<p style='color: red;'>Failed to load interview list.</p>";
+            }
         }
 
-        container.innerHTML = `
-            <p>
-                Preparation plan available for
-                <strong>${plan.company}</strong>.
-            </p>
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll(".task-checkbox");
+            const checked = document.querySelectorAll(".task-checkbox:checked");
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+            
+            document.getElementById("progressBar").style.width = percentage + "%";
+            document.getElementById("progressText").innerText = percentage + "% Complete";
+        }
 
-            <a href="/plan.html">
-                View Preparation Plan
-            </a>
-        `;
-
-    } catch (error) {
-
-        console.log(error);
-
-        document.getElementById("preparation").innerHTML =
-            "Failed to load preparation plan.";
-
-    }
-}
-
-loadPreparationPlan();
-
+        loadNextInterview();
+        loadAllInterviews();
     </script>
-
 </body>
-
 </html>

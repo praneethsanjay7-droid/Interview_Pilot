@@ -1,120 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interviews - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <h1>Interview Schedule</h1>
+    <div class="app-page">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <a href="dashboard.html" class="brand-logo">
+                <div class="brand-icon">✈️</div>
+                <span>Interview Pilot</span>
+            </a>
 
-    <h2>Add Interview</h2>
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="interviews.html" class="nav-link active">
+                        <span class="nav-icon">📅</span>
+                        <span>Interviews</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="plan.html" class="nav-link">
+                        <span class="nav-icon">📚</span>
+                        <span>Preparation Plan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="nav-link">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
 
-    <form action="/add-interview" method="POST">
+            <div class="sidebar-footer">
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
 
-        <input
-            type="text"
-            name="company"
-            placeholder="Company"
-            required
-        >
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Header Section -->
+            <header class="page-header">
+                <h1 class="page-title">Your Placement Interviews</h1>
+                <p class="page-subtitle">Keep track of every opportunity and stay prepared for success.</p>
+            </header>
 
-        <br><br>
+            <!-- Motivational Banner -->
+            <div class="quote-card">
+                <div class="quote-icon">🌟</div>
+                <div>
+                    <div class="quote-text">"Every interview is another step closer to your goal."</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Placement Journey Tip</div>
+                </div>
+            </div>
 
-        <input
-            type="date"
-            name="date"
-            required
-        >
+            <!-- Grid: Add Interview Form & Interview List -->
+            <div class="grid-3" style="grid-template-columns: 1fr 2fr;">
+                <!-- Add Interview Form Card -->
+                <div class="card" style="height: fit-content;">
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">+ Add New Interview</h3>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">Add an upcoming placement drive to generate custom prep plans.</p>
 
-        <br><br>
+                    <form action="/add-interview" method="POST">
+                        <div class="form-group">
+                            <label class="form-label" for="company">Company Name</label>
+                            <input type="text" id="company" name="company" class="form-control" placeholder="e.g. TCS, Infosys, Wipro" required>
+                        </div>
 
-        <input
-            type="text"
-            name="round"
-            placeholder="Round"
-            required
-        >
+                        <div class="form-group">
+                            <label class="form-label" for="date">Interview Date</label>
+                            <input type="date" id="date" name="date" class="form-control" required>
+                        </div>
 
-        <br><br>
+                        <div class="form-group">
+                            <label class="form-label" for="round">Round Type</label>
+                            <input type="text" id="round" name="round" class="form-control" placeholder="e.g. Technical, HR, OA" required>
+                        </div>
 
-        <button type="submit">
-            Add Interview
-        </button>
+                        <button type="submit" class="btn btn-primary btn-block" style="padding: 12px;">
+                            + Add Interview
+                        </button>
+                    </form>
+                </div>
 
-    </form>
-
-    <hr>
-
-    <h2>Upcoming Interviews</h2>
-
-    <div id="interviewList">
-        Loading interviews...
+                <!-- Interview List Container -->
+                <div>
+                    <h3 class="section-title">📅 Scheduled Interviews</h3>
+                    <div id="interviewList">
+                        <p style="color: var(--text-muted);">Loading your interviews...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <br>
-
-    <a href="/dashboard.html">
-        Back to Dashboard
-    </a>
-
+    <!-- Frontend Script connecting to existing backend routes -->
     <script>
-
         async function loadInterviews() {
-
             try {
-
                 const response = await fetch("/interviews");
-
                 const interviews = await response.json();
-
                 const list = document.getElementById("interviewList");
 
-                if (interviews.length === 0) {
-
-                    list.innerHTML = "No interviews added yet.";
-
+                if (!interviews || interviews.length === 0) {
+                    list.innerHTML = `
+                        <div class="card empty-state">
+                            <div class="empty-icon">📅</div>
+                            <div class="empty-title">Your interview calendar is clear</div>
+                            <div class="empty-desc">Add your upcoming campus placement drives to unlock customized AI preparation roadmaps.</div>
+                        </div>
+                    `;
                     return;
                 }
 
                 list.innerHTML = "";
-
                 interviews.forEach(interview => {
+                    const interviewDate = new Date(interview.date);
+                    const today = new Date();
+                    const diffTime = interviewDate - today;
+                    const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
-                    const div = document.createElement("div");
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.style.borderLeft = "4px solid var(--primary)";
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="font-size: 20px; font-weight: 700; color: var(--dark);">${interview.company}</h3>
+                                <div style="color: var(--text-muted); font-size: 14px; margin-top: 2px;">
+                                    Round: <strong>${interview.round}</strong>
+                                </div>
+                            </div>
+                            <span class="badge badge-warning">${diffDays} days remaining</span>
+                        </div>
 
-                    const date = new Date(interview.date)
-                        .toLocaleDateString();
-
-                    div.innerHTML = `
-                        <p>
-                            <strong>${interview.company}</strong>
-                            <br>
-                            Date: ${date}
-                            <br>
-                            Round: ${interview.round}
-                        </p>
-
-                        <hr>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 16px;">
+                            <div style="font-size: 13px; color: var(--text-muted);">
+                                📅 <strong>Scheduled:</strong> ${interviewDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </div>
+                            <a href="plan.html?company=${encodeURIComponent(interview.company)}&id=${interview._id}" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Start Preparation 📚</a>
+                        </div>
                     `;
-
-                    list.appendChild(div);
-
+                    list.appendChild(card);
                 });
-
             } catch (error) {
-
-                console.log(error);
-
-                document.getElementById("interviewList").innerHTML =
-                    "Failed to load interviews.";
-
+                console.error(error);
+                document.getElementById("interviewList").innerHTML = "<p style='color: red;'>Failed to load interviews.</p>";
             }
         }
 
         loadInterviews();
-
     </script>
-
 </body>
 </html>

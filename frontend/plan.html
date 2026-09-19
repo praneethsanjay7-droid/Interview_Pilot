@@ -1,68 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preparation Plan - Interview Pilot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <h1>Preparation Plan</h1>
+    <div class="app-page">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <a href="dashboard.html" class="brand-logo">
+                <div class="brand-icon">✈️</div>
+                <span>Interview Pilot</span>
+            </a>
 
-    <div id="planContainer">
-        Loading preparation plan...
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard.html" class="nav-link">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="interviews.html" class="nav-link">
+                        <span class="nav-icon">📅</span>
+                        <span>Interviews</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="plan.html" class="nav-link active">
+                        <span class="nav-icon">📚</span>
+                        <span>Preparation Plan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html" class="nav-link">
+                        <span class="nav-icon">👤</span>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Header Section -->
+            <header class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h1 class="page-title">Your Preparation Plan</h1>
+                    <p class="page-subtitle">Your personalized roadmap to interview confidence.</p>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <a id="createSampleBtn" href="/create-test-plan" class="btn btn-outline" style="font-size: 13px;">Create Sample Plan</a>
+                    <a id="generateAiBtn" href="/generate-plan" class="btn btn-secondary" style="font-size: 13px;">🤖 Generate AI Plan from Resume</a>
+                </div>
+            </header>
+
+            <!-- Motivational Banner -->
+            <div class="quote-card">
+                <div class="quote-icon">📖</div>
+                <div>
+                    <div class="quote-text">"Small preparation today creates confidence tomorrow."</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Roadmap Guidance</div>
+                </div>
+            </div>
+
+            <!-- Dynamic Preparation Plan Container -->
+            <div id="planContainer">
+                <p style="color: var(--text-muted);">Loading your personalized plan...</p>
+            </div>
+        </main>
     </div>
 
-    <br>
-
-    <a href="/dashboard.html">
-        Back to Dashboard
-    </a>
-
+    <!-- Frontend Script connecting to existing backend routes -->
     <script>
+        const params = new URLSearchParams(window.location.search);
+        const companyParam = params.get("company");
+        const idParam = params.get("id");
+
+        // Update top buttons to preserve target company context
+        const generateAiBtn = document.getElementById("generateAiBtn");
+        const createSampleBtn = document.getElementById("createSampleBtn");
+
+        if (companyParam || idParam) {
+            const queryStr = `?company=${encodeURIComponent(companyParam || '')}&id=${encodeURIComponent(idParam || '')}`;
+            if (generateAiBtn) generateAiBtn.href = `/generate-plan${queryStr}`;
+            if (createSampleBtn) createSampleBtn.href = `/create-test-plan${queryStr}`;
+        }
 
         async function loadPlan() {
-
             try {
+                let fetchUrl = "/plan";
+                if (companyParam || idParam) {
+                    fetchUrl += `?company=${encodeURIComponent(companyParam || '')}&id=${encodeURIComponent(idParam || '')}`;
+                }
 
-                const response = await fetch("/plan");
-
+                const response = await fetch(fetchUrl);
                 const plan = await response.json();
+                const container = document.getElementById("planContainer");
 
-                const container =
-                    document.getElementById("planContainer");
-
-                if (!plan) {
-
-                    container.innerHTML =
-                        "No preparation plan found.";
-
+                if (!plan || !plan.plan) {
+                    container.innerHTML = `
+                        <div class="card empty-state">
+                            <div class="empty-icon">📚</div>
+                            <div class="empty-title">Your preparation roadmap will appear here</div>
+                            <div class="empty-desc">Generate a personalized preparation plan based on your upcoming interview and uploaded resume.</div>
+                            <div style="display: flex; gap: 12px; justify-content: center;">
+                                <a href="/generate-plan${companyParam ? '?company=' + encodeURIComponent(companyParam) : ''}" class="btn btn-primary">🤖 Generate AI Plan with Gemini</a>
+                            </div>
+                        </div>
+                    `;
                     return;
                 }
 
                 container.innerHTML = `
-                    <h2>${plan.company}</h2>
+                    <div class="card" style="border-left: 4px solid var(--accent); margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span class="badge badge-accent" style="margin-bottom: 8px;">Target Company</span>
+                                <h2 style="font-size: 24px; font-weight: 800; color: var(--dark);">${plan.company}</h2>
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-muted);">
+                                🕒 <strong>Generated:</strong> ${new Date(plan.generatedDate || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </div>
+                        </div>
+                    </div>
 
-                    <p>
-                        <strong>Generated:</strong>
-                        ${new Date(plan.generatedDate).toLocaleDateString()}
-                    </p>
-
-                    <pre>${plan.plan}</pre>
+                    <div class="card plan-content">
+                        <h3 class="section-title" style="margin-bottom: 16px;">📋 Customized Interview Prep Guide</h3>
+                        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 24px; font-family: monospace, sans-serif; font-size: 14px; white-space: pre-wrap; line-height: 1.6; color: var(--text-main);">${plan.plan}</div>
+                    </div>
                 `;
-
             } catch (error) {
-
-                console.log(error);
-
-                document.getElementById("planContainer").innerHTML =
-                    "Failed to load preparation plan.";
-
+                console.error(error);
+                document.getElementById("planContainer").innerHTML = `
+                    <div class="card empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div class="empty-title">No plan created yet</div>
+                        <div class="empty-desc">Please add an interview and upload a resume to generate your AI preparation plan.</div>
+                        <a href="/create-test-plan" class="btn btn-primary">Create Sample Plan</a>
+                    </div>
+                `;
             }
         }
 
         loadPlan();
-
     </script>
-
 </body>
 </html>

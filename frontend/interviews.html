@@ -1,20 +1,108 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Interviews - Interview Pilot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interviews - Interview Pilot</title>
+
+```
+<link rel="stylesheet" href="style.css">
+```
+
 </head>
+
 <body>
-	<h1>Practice interviews</h1>
-	<p>Choose an interview category to begin practicing.</p>
 
-	<ul>
-		<li><a href="#technical">Technical interview</a></li>
-		<li><a href="#behavioral">Behavioral interview</a></li>
-		<li><a href="#hr">HR interview</a></li>
-	</ul>
+```
+<nav>
 
-	<p><a href="dashboard.html">Back to dashboard</a></p>
+    <div class="logo">
+        Interview Pilot
+    </div>
+
+    <div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="profile.html">Profile</a>
+        <a href="interviews.html">Interviews</a>
+        <a href="plan.html">Preparation Plan</a>
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+    <h1>My Interviews</h1>
+
+    <p>
+        Add your upcoming campus placement interviews.
+    </p>
+
+    <br>
+
+
+    <h2>Add Interview</h2>
+
+    <br>
+
+    <form action="/add-interview" method="POST">
+
+        <label>Company</label>
+        <input
+            type="text"
+            name="company"
+            placeholder="e.g. TCS"
+            required
+        >
+
+        <br>
+
+        <label>Interview Date</label>
+        <input
+            type="date"
+            name="date"
+            required
+        >
+
+        <br>
+
+        <label>Round</label>
+        <input
+            type="text"
+            name="round"
+            placeholder="e.g. Technical"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Add Interview
+        </button>
+
+    </form>
+
+
+    <br><br>
+
+
+    <h2>Upcoming Interviews</h2>
+
+    <br>
+
+    <p>No interviews added yet.</p>
+
+    <br>
+
+    <a href="dashboard.html">
+        Back to Dashboard
+    </a>
+
+</div>
+```
+
 </body>
+
 </html>

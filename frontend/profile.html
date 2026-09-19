@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
 	<title>Profile - Interview Pilot</title>
 </head>
 <body>
@@ -24,6 +25,24 @@
 
 		<button type="submit">Save profile</button>
 	</form>
+    <h2>Resume</h2>
+
+<form action="/upload-resume" method="POST" enctype="multipart/form-data">
+
+    <input
+        type="file"
+        name="resume"
+        accept=".pdf,.doc,.docx"
+        required
+    >
+
+    <br><br>
+
+    <button type="submit">
+        Upload Resume
+    </button>
+
+</form>
 
 	<p><a href="dashboard.html">Back to dashboard</a></p>
 </body>

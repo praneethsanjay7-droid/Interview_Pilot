@@ -1,22 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<title>Dashboard - Interview Pilot</title>
+    <title>Dashboard - Interview Pilot</title>
 </head>
+
 <body>
-	<h1>Dashboard</h1>
-	<p>Welcome to your interview preparation dashboard.</p>
 
-	<h2>Quick links</h2>
-	<ul>
-		<li><a href="interviews.html">Practice interviews</a></li>
-		<li><a href="plan.html">View preparation plan</a></li>
-		<li><a href="profile.html">Open profile</a></li>
-	</ul>
+    <h1>Interview Pilot</h1>
 
-	<a href="index.html">Return to home</a>
+    <h2>Dashboard</h2>
+
+    <p>Welcome to your interview preparation dashboard.</p>
+
+    <hr>
+
+    <h2>Next Interview</h2>
+
+    <div id="nextInterview">
+        Loading...
+    </div>
+
+    <hr>
+
+<h2>Preparation</h2>
+
+<div id="preparation">
+    Loading...
+</div>
+
+    <hr>
+
+    <h2>Quick Links</h2>
+
+    <p>
+        <a href="/interviews.html">
+            Manage Interviews
+        </a>
+    </p>
+
+    <p>
+        <a href="/plan.html">
+            View Preparation Plan
+        </a>
+    </p>
+
+    <p>
+        <a href="/profile.html">
+            Open Profile
+        </a>
+    </p>
+
+    <script>
+
+        async function loadNextInterview() {
+
+            try {
+
+                const response = await fetch("/next-interview");
+
+                const interview = await response.json();
+
+                const container =
+                    document.getElementById("nextInterview");
+
+                if (!interview) {
+
+                    container.innerHTML =
+                        "No upcoming interviews.";
+
+                    return;
+                }
+
+                const date = new Date(interview.date)
+                    .toLocaleDateString();
+
+                container.innerHTML = `
+                    <h3>${interview.company}</h3>
+
+                    <p>
+                        <strong>Date:</strong> ${date}
+                    </p>
+
+                    <p>
+                        <strong>Round:</strong> ${interview.round}
+                    </p>
+                `;
+
+            } catch (error) {
+
+                console.log(error);
+
+                document.getElementById("nextInterview").innerHTML =
+                    "Failed to load interview.";
+
+            }
+        }
+
+        loadNextInterview();
+
+        async function loadPreparationPlan() {
+
+    try {
+
+        const response = await fetch("/plan");
+
+        const plan = await response.json();
+
+        const container =
+            document.getElementById("preparation");
+
+        if (!plan) {
+
+            container.innerHTML = `
+                <p>No preparation plan available yet.</p>
+                <a href="/plan.html">
+                    View Preparation Plan
+                </a>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = `
+            <p>
+                Preparation plan available for
+                <strong>${plan.company}</strong>.
+            </p>
+
+            <a href="/plan.html">
+                View Preparation Plan
+            </a>
+        `;
+
+    } catch (error) {
+
+        console.log(error);
+
+        document.getElementById("preparation").innerHTML =
+            "Failed to load preparation plan.";
+
+    }
+}
+
+loadPreparationPlan();
+
+    </script>
+
 </body>
+
 </html>

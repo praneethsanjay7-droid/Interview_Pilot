@@ -1,22 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="style.css">
-	<title>Preparation Plan - Interview Pilot</title>
+    <title>Preparation Plan - Interview Pilot</title>
 </head>
+
 <body>
-	<h1>Preparation plan</h1>
-	<p>A simple weekly plan for your interview preparation.</p>
 
-	<ol>
-		<li>Review your resume and target role.</li>
-		<li>Practice technical questions.</li>
-		<li>Prepare answers for behavioral questions.</li>
-		<li>Complete a mock interview.</li>
-	</ol>
+    <h1>Preparation Plan</h1>
 
-	<p><a href="dashboard.html">Back to dashboard</a></p>
+    <div id="planContainer">
+        Loading preparation plan...
+    </div>
+
+    <br>
+
+    <a href="/dashboard.html">
+        Back to Dashboard
+    </a>
+
+    <script>
+
+        async function loadPlan() {
+
+            try {
+
+                const response = await fetch("/plan");
+
+                const plan = await response.json();
+
+                const container =
+                    document.getElementById("planContainer");
+
+                if (!plan) {
+
+                    container.innerHTML =
+                        "No preparation plan found.";
+
+                    return;
+                }
+
+                container.innerHTML = `
+                    <h2>${plan.company}</h2>
+
+                    <p>
+                        <strong>Generated:</strong>
+                        ${new Date(plan.generatedDate).toLocaleDateString()}
+                    </p>
+
+                    <pre>${plan.plan}</pre>
+                `;
+
+            } catch (error) {
+
+                console.log(error);
+
+                document.getElementById("planContainer").innerHTML =
+                    "Failed to load preparation plan.";
+
+            }
+        }
+
+        loadPlan();
+
+    </script>
+
 </body>
 </html>

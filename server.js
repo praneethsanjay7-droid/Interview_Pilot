@@ -15,7 +15,7 @@ const PreparationPlan=require("./Models/PreparationPlan");
 
 const app = express();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8900;
 const uploadDir = path.join(__dirname, "uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -40,6 +40,8 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage
 });
+
+
 app.post("/register",async(req,res)=>{
 
   try{
@@ -94,34 +96,158 @@ app.post("/upload-resume", upload.single("resume"), async (req, res) => {
         res.send("Resume upload failed");
     }
 });
+app.post("/add-interview", async (req, res) => {
+    try {
 
+        const { company, date, round } = req.body;
 
-app.post("/add-interview",async(req,res)=>{
-    try{
-        const {company,date,round}=req.body;
+        const interview = new Interview({
+            company,
+            date,
+            round
+        });
 
-        const interview=new Interview({company,date,round});
         await interview.save();
-        res.send("Interview added successfully");
+
+        res.redirect("/interviews.html");
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).send("Failed to add interview");
     }
-    catch(err){
-        console.log(err.message);
-        res.send("Failed to add interview");
-    }
-})
+});
+
+
 app.use(express.static(path.join(__dirname, "frontend")));
 
+app.get("/interviews", async (req, res) => {
+    try {
+        const interviews = await Interview.find()
+            .sort({ date: 1 });
+
+        res.json(interviews);
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            message: "Failed to load interviews"
+        });
+    }
+});
+
+app.get("/next-interview", async (req, res) => {
+    try {
+
+        const interview = await Interview.findOne({
+            date: { $gte: new Date() }
+        }).sort({ date: 1 });
+
+        if (!interview) {
+            return res.json(null);
+        }
+
+        res.json(interview);
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).json({
+            message: "Failed to load next interview"
+        });
+    }
+});
+
+
+app.get("/create-test-plan", async (req, res) => {
+    try {
+
+        const interview = await Interview.findOne()
+            .sort({ date: 1 });
+
+        if (!interview) {
+            return res.send("Please add an interview first");
+        }
+
+        const testPlan = new PreparationPlan({
+            interviewId: interview._id,
+            company: interview.company,
+            plan: `
+Interview Preparation Plan
+
+Company: ${interview.company}
+
+1. Technical Preparation
+- Revise Java basics
+- Practice SQL queries
+- Revise Data Structures
+
+2. Project Preparation
+- Understand your projects
+- Prepare project explanation
+- Prepare questions about your technologies
+
+3. HR Preparation
+- Tell me about yourself
+- Why should we hire you?
+- Explain your strengths and weaknesses
+
+4. Final Preparation
+- Revise important concepts
+- Prepare questions for the interviewer
+- Keep your resume ready
+`
+        });
+
+        await testPlan.save();
+
+        res.send("Test preparation plan created successfully");
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).send("Failed to create test plan");
+    }
+});
+app.get("/plan", async (req, res) => {
+    try {
+
+        const plan = await PreparationPlan.findOne()
+            .sort({ generatedDate: -1 });
+
+        if (!plan) {
+            return res.json(null);
+        }
+
+        res.json(plan);
+
+    } catch (error) {
+
+        console.log(error.message);
+
+        res.status(500).json({
+            message: "Failed to load preparation plan"
+        });
+    }
+});
+
+
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 
 app.get("/test-gemini", async (req, res) => {
     if (!ai) {
-        return res.status(500).json({
-            error: "Gemini API key is not configured. Add GEMINI_API_KEY to your local .env file before calling this route."
+        return res.status(503).json({
+            success: false,
+            error: "Gemini is not configured. Please set GEMINI_API_KEY in your local .env file."
         });
     }
 
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
+            model: GEMINI_MODEL,
             contents: [
                 {
                     role: "user",
@@ -130,18 +256,18 @@ app.get("/test-gemini", async (req, res) => {
             ],
         });
 
-        const text = response?.text || response?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "No response returned";
-        res.send(text);
+        const text = response?.text || response?.candidates?.[0]?.content?.parts?.map((p) => p.text).join("") || "Hello from Gemini!";
+        res.json({
+            success: true,
+            model: GEMINI_MODEL,
+            message: text
+        });
     } catch (err) {
-        console.log("Gemini Error:");
-        console.log(err.message);
-        console.log("Full error:", err);
+        console.error("Gemini request failed:", err?.message || "Unknown error");
         res.status(500).json({
-            error: "Gemini API failed",
-            details: err?.message || "Unknown Gemini error",
-            status: err?.status || null,
-            code: err?.code || null,
-            body: err?.body || null,
+            success: false,
+            error: "Failed to communicate with Gemini AI",
+            details: err?.message || "Internal server error"
         });
     }
 });
@@ -202,7 +328,7 @@ Keep the plan practical and concise.
 `;
 
         const response = await ai.models.generateContent({
-            model: "gemini-3.6-flash",
+            model: GEMINI_MODEL,
             contents: createUserContent([
                 createPartFromUri(resumeFile.uri, resumeFile.mimeType),
                 prompt
@@ -222,10 +348,16 @@ Keep the plan practical and concise.
         res.send(`<pre>${text}</pre>`);
 
     } catch (error) {
-        console.log("Plan generation error:");
-        console.log(error);
-        res.status(500).send("Failed to generate preparation plan");
-    }
+
+    console.log("========== GEMINI ERROR ==========");
+    console.log(error);
+    console.log("==================================");
+
+    res.status(500).send(`
+        <h2>Failed to generate preparation plan</h2>
+        <pre>${error.message}</pre>
+    `);
+}
 });
 app.listen(PORT, () => {
     console.log(`app is listening on port ${PORT}`);

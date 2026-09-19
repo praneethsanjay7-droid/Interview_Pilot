@@ -465,3 +465,11 @@ Target Round: ${interview.round || "Technical"}
 app.listen(PORT, () => {
     console.log(`app is listening on port ${PORT}`);
 });
+
+if (process.env.NODE_ENV !== "production") {
+    app.listen(PORT, () => {
+        console.log(`app is listening on port ${PORT}`);
+    });
+}
+
+module.exports = app;

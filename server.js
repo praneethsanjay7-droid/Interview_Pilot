@@ -5,6 +5,7 @@ const { GoogleGenAI,createUserContent,createPartFromUri } = require("@google/gen
 const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
 
 const path = require("path");
+const os = require("os");
 const mongoose = require("mongoose");
 const multer = require("multer");
 
@@ -16,8 +17,12 @@ const PreparationPlan=require("./Models/PreparationPlan");
 const app = express();
 
 const PORT = process.env.PORT || 8900;
-const uploadDir = path.join(__dirname, "uploads");
-fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = path.join(os.tmpdir(), "uploads");
+try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+} catch (e) {
+    console.warn("Could not create upload directory:", e.message);
+}
 
 connectDB();
 
@@ -462,11 +467,7 @@ Target Round: ${interview.round || "Technical"}
         res.redirect(`/plan.html?error=gen_failed`);
     }
 });
-app.listen(PORT, () => {
-    console.log(`app is listening on port ${PORT}`);
-});
-
-if (process.env.NODE_ENV !== "production") {
+if (!process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`app is listening on port ${PORT}`);
     });

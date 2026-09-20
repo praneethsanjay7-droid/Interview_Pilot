@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: interview-pilot
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: MONGO_URI
+        sync: false
